@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>مغامرة الحروف السفاري | هلا هاي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFFCF4;
+    --leaf:#2E8B57;
+    --leaf-dark:#1F6B41;
+    --leaf-light:#E4F5E9;
+    --sun:#FFC93C;
+    --sun-dark:#E8A800;
+    --coral:#FF7A5C;
+    --coral-dark:#E85A3C;
+    --sky:#3FB8E0;
+    --sky-dark:#2A96BC;
+    --ink:#28362F;
+    --gray:#8B9A91;
+    --white:#FFFFFF;
+    --shadow: 0 8px 0 rgba(31,107,65,0.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Nunito',sans-serif;
+    background:
+      radial-gradient(circle at 10% 15%, rgba(255,201,60,0.18) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(63,184,224,0.16) 0%, transparent 40%),
+      radial-gradient(circle at 80% 10%, rgba(255,122,92,0.14) 0%, transparent 35%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app{
+    max-width:720px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom:90px;
+    position:relative;
+  }
+  h1,h2,h3,.display{font-family:'Baloo 2',sans-serif;}
+
+  /* ===== Top trail nav ===== */
+  .trail{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 14px 10px;
+    gap:4px;
+    overflow-x:auto;
+  }
+  .trail-stop{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    flex:1;
+    min-width:0;
+    opacity:0.35;
+    transition:all .3s;
+    cursor:pointer;
+    background:none;
+    border:none;
+  }
+  .trail-stop .paw{
+    width:34px;height:34px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:17px;
+    background:var(--white);
+    border:2.5px solid var(--gray);
+    transition:all .3s;
+  }
+  .trail-stop.active{opacity:1;}
+  .trail-stop.active .paw{
+    background:var(--leaf);
+    border-color:var(--leaf-dark);
+    transform:scale(1.15);
+    box-shadow:0 4px 0 var(--leaf-dark);
+  }
+  .trail-stop.done{opacity:0.9;}
+  .trail-stop.done .paw{background:var(--sun);border-color:var(--sun-dark);}
+  .trail-stop span.lbl{font-size:9px;font-weight:800;color:var(--ink);white-space:nowrap;}
+
+  /* ===== Screens ===== */
+  .screen{display:none;flex:1;flex-direction:column;padding:10px 20px 20px;animation:fadeIn .35s ease;}
+  .screen.show{display:flex;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .badge-eyebrow{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--leaf-light);color:var(--leaf-dark);
+    font-weight:800;font-size:13px;
+    padding:6px 14px;border-radius:100px;
+    width:fit-content;margin-bottom:10px;
+  }
+
+  .big-title{font-size:30px;font-weight:800;color:var(--leaf-dark);line-height:1.25;margin:0 0 8px;}
+  .sub-text{font-size:15.5px;color:#5c6b62;line-height:1.7;margin:0 0 18px;font-weight:600;}
+
+  /* ===== Cover ===== */
+  .cover-wrap{align-items:center;text-align:center;justify-content:center;flex:1;padding-top:10px;}
+  .jungle-emoji-row{font-size:44px;margin-bottom:6px;letter-spacing:6px;}
+  .cover-card{
+    background:var(--white);
+    border-radius:28px;
+    padding:30px 22px;
+    box-shadow:var(--shadow);
+    border:3px solid var(--leaf-light);
+    width:100%;
+  }
+  .letters-preview{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0;
+  }
+  .letter-chip{
+    width:38px;height:38px;border-radius:12px;
+    background:var(--sun);color:var(--leaf-dark);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:17px;font-family:'Baloo 2',sans-serif;
+    box-shadow:0 3px 0 var(--sun-dark);
+  }
+
+  /* ===== Buttons ===== */
+  .btn{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;font-size:17px;
+    border:none;border-radius:16px;
+    padding:15px 24px;
+    cursor:pointer;
+    color:var(--white);
+    background:var(--leaf);
+    box-shadow:0 5px 0 var(--leaf-dark);
+    transition:transform .12s;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--leaf-dark);}
+  .btn.coral{background:var(--coral);box-shadow:0 5px 0 var(--coral-dark);}
+  .btn.sky{background:var(--sky);box-shadow:0 5px 0 var(--sky-dark);}
+  .btn.sun{background:var(--sun);color:var(--leaf-dark);box-shadow:0 5px 0 var(--sun-dark);}
+  .btn.block{width:100%;}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* ===== Section intro ===== */
+  .intro-icon{font-size:60px;text-align:center;margin:6px 0 14px;}
+
+  /* ===== Flashcards ===== */
+  .flash-progress{
+    text-align:center;font-weight:800;color:var(--gray);font-size:13px;margin-bottom:10px;
+  }
+  .flash-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;min-height:320px;}
+  .flashcard{
+    width:100%;max-width:320px;height:290px;
+    perspective:1200px;
+    cursor:pointer;
+  }
+  .flashcard-inner{
+    position:relative;width:100%;height:100%;
+    transition:transform .55s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+  .fc-face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;
+    border-radius:26px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:var(--shadow);
+    border:3px solid var(--leaf-light);
+  }
+  .fc-front{background:var(--white);}
+  .fc-back{background:var(--leaf);transform:rotateY(180deg);color:var(--white);border-color:var(--leaf-dark);}
+  .fc-emoji{font-size:88px;margin-bottom:10px;}
+  .fc-letter-tag{
+    position:absolute;top:14px;right:16px;
+    background:var(--sun);color:var(--leaf-dark);
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:18px;
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 0 var(--sun-dark);
+  }
+  .fc-hint{font-size:13px;color:var(--gray);font-weight:700;}
+  .fc-word{font-family:'Baloo 2',sans-serif;font-size:34px;font-weight:800;direction:ltr;}
+  .fc-speak{
+    margin-top:10px;background:rgba(255,255,255,0.25);border:none;color:var(--white);
+    width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;
+  }
+  .flash-nav{display:flex;gap:12px;width:100%;max-width:320px;}
+  .flash-nav .btn{flex:1;}
+
+  /* ===== Matching game ===== */
+  .match-round-label{text-align:center;font-weight:800;color:var(--leaf-dark);font-size:15px;margin-bottom:12px;}
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .match-col{display:flex;flex-direction:column;gap:10px;}
+  .match-item{
+    background:var(--white);border:3px solid var(--leaf-light);
+    border-radius:16px;padding:14px 8px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:700;
+    cursor:pointer;transition:all .18s;
+    min-height:64px;text-align:center;
+  }
+  .match-item.emoji{font-size:32px;}
+  .match-item.word{font-size:18px;direction:ltr;color:var(--ink);}
+  .match-item.selected{border-color:var(--sky);background:#E7F8FD;transform:scale(1.04);}
+  .match-item.correct{border-color:var(--leaf);background:var(--leaf-light);opacity:0.55;pointer-events:none;}
+  .match-item.wrong{animation:shake .4s;border-color:var(--coral);background:#FFEDE9;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+  .score-pill{
+    display:flex;align-items:center;gap:6px;justify-content:center;
+    background:var(--sun);color:var(--leaf-dark);font-weight:800;
+    padding:6px 16px;border-radius:100px;width:fit-content;margin:0 auto 14px;
+    font-family:'Baloo 2',sans-serif;font-size:15px;
+  }
+
+  /* ===== Missing letter ===== */
+  .missing-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;}
+  .missing-card{
+    background:var(--white);border-radius:26px;padding:36px 24px;
+    box-shadow:var(--shadow);border:3px solid var(--leaf-light);
+    text-align:center;width:100%;max-width:320px;
+  }
+  .missing-emoji{font-size:70px;margin-bottom:14px;}
+  .missing-word{
+    font-family:'Baloo 2',sans-serif;font-size:38px;font-weight:800;
+    direction:ltr;letter-spacing:3px;color:var(--leaf-dark);
+  }
+  .missing-word .blank{
+    display:inline-block;width:0.9em;border-bottom:4px solid var(--coral);color:transparent;
+  }
+  .missing-word .filled{color:var(--coral);}
+  .letter-options{display:flex;gap:12px;}
+  .letter-opt{
+    width:58px;height:58px;border-radius:14px;
+    background:var(--white);border:3px solid var(--sky);
+    font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;color:var(--sky-dark);
+    cursor:pointer;box-shadow:0 4px 0 var(--sky-dark);
+  }
+  .letter-opt.correct{background:var(--leaf);border-color:var(--leaf-dark);color:var(--white);box-shadow:0 4px 0 var(--leaf-dark);}
+  .letter-opt.wrong{background:var(--coral);border-color:var(--coral-dark);color:var(--white);box-shadow:0 4px 0 var(--coral-dark);animation:shake .4s;}
+
+  /* ===== Quiz ===== */
+  .quiz-q-count{text-align:center;font-weight:800;color:var(--gray);font-size:13px;margin-bottom:8px;}
+  .quiz-emoji{font-size:78px;text-align:center;margin:14px 0;}
+  .quiz-options{display:flex;flex-direction:column;gap:12px;}
+  .quiz-opt{
+    background:var(--white);border:3px solid var(--leaf-light);border-radius:16px;
+    padding:15px;font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:700;
+    direction:ltr;text-align:center;cursor:pointer;color:var(--ink);
+  }
+  .quiz-opt.correct{background:var(--leaf-light);border-color:var(--leaf);color:var(--leaf-dark);}
+  .quiz-opt.wrong{background:#FFEDE9;border-color:var(--coral);color:var(--coral-dark);animation:shake .4s;}
+
+  /* ===== Result / Celebration ===== */
+  .result-wrap{align-items:center;text-align:center;justify-content:center;flex:1;}
+  .stars-row{font-size:44px;margin:14px 0;}
+  .result-score{font-family:'Baloo 2',sans-serif;font-size:52px;font-weight:800;color:var(--leaf-dark);}
+  .badge-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0;}
+  .badge{
+    background:var(--white);border:2.5px solid var(--sun);border-radius:16px;
+    padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:11px;font-weight:800;color:var(--leaf-dark);width:84px;
+  }
+  .badge .ic{font-size:28px;}
+
+  /* ===== Bottom navbar ===== */
+  .navbar{
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--white);
+    border-top:3px solid var(--leaf-light);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 18px;
+    max-width:720px;margin:0 auto;
+    box-shadow:0 -4px 14px rgba(0,0,0,0.06);
+  }
+  .nav-btn{
+    background:none;border:none;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;
+    color:var(--leaf-dark);cursor:pointer;padding:8px 10px;
+  }
+  .nav-btn:disabled{opacity:0.3;}
+  .nav-mid{font-weight:800;color:var(--gray);font-size:13px;direction:ltr;unicode-bidi:isolate;}
+
+  .instr-list{background:var(--white);border-radius:20px;padding:18px 20px;border:3px solid var(--leaf-light);}
+  .instr-list li{margin-bottom:10px;font-weight:700;color:#4a584f;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="trail" id="trail"></div>
+
+  <!-- Screen 0: Cover -->
+  <div class="screen show" data-screen="0">
+    <div class="cover-wrap">
+      <div class="jungle-emoji-row">🦁🐘🦜🐊🐒</div>
+      <div class="cover-card">
+        <div class="badge-eyebrow">🎒 هلا هاي — دورة التأسيس</div>
+        <h1 class="big-title">مغامرة الحروف<br>السفاري</h1>
+        <p class="sub-text">راجعوا حروفكم من A إلى K، وكلمات الأكل والمنزل، بالبطاقات والمطابقة والألعاب!</p>
+        <div class="letters-preview" id="coverLetters"></div>
+        <button class="btn block" onclick="goTo(1)">🚀 يلا نبدأ!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 1: Flashcards intro -->
+  <div class="screen" data-screen="1">
+    <div class="intro-icon">🃏</div>
+    <h2 class="big-title" style="text-align:center;">بطاقات الحروف</h2>
+    <div class="instr-list">
+      <ul>
+        <li>🔊 اضغط على البطاقة عشان تسمع وتشوف الكلمة</li>
+        <li>➡️ استخدم "التالي" عشان تنتقل للبطاقة الجاية</li>
+        <li>🔤 راح تمرون على كل حروف A إلى K</li>
+      </ul>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block sun" onclick="goTo(2)">ابدأ البطاقات 🎴</button>
+  </div>
+
+  <!-- Screen 2: Flashcards -->
+  <div class="screen" data-screen="2">
+    <div class="flash-progress" id="flashProgress"></div>
+    <div class="flash-stage">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-letter-tag" id="fcLetterTag"></div>
+            <div class="fc-emoji" id="fcEmoji"></div>
+            <div class="fc-hint">اضغط لتسمع الكلمة 👆</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-word" id="fcWord"></div>
+            <button class="fc-speak" onclick="event.stopPropagation();speakWord()">🔊</button>
+          </div>
+        </div>
+      </div>
+      <div class="flash-nav">
+        <button class="btn coral" id="flashPrev" onclick="flashStep(-1)">◀ السابق</button>
+        <button class="btn" id="flashNext" onclick="flashStep(1)">التالي ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Matching intro -->
+  <div class="screen" data-screen="3">
+    <div class="intro-icon">🧩</div>
+    <h2 class="big-title" style="text-align:center;">لعبة المطابقة</h2>
+    <div class="instr-list">
+      <ul>
+        <li>👆 اضغط على الصورة، ثم اضغط على الكلمة الصحيحة</li>
+        <li>✅ كل حرف له 4 كلمات تطابقونها</li>
+        <li>⭐ اجمعوا أكبر عدد من النقاط</li>
+      </ul>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block sun" onclick="goTo(4)">ابدأ المطابقة 🎯</button>
+  </div>
+
+  <!-- Screen 4: Matching -->
+  <div class="screen" data-screen="4">
+    <div class="score-pill">⭐ <span id="matchScore">0</span> نقطة</div>
+    <div class="match-round-label" id="matchRoundLabel"></div>
+    <div class="match-grid">
+      <div class="match-col" id="matchEmojiCol"></div>
+      <div class="match-col" id="matchWordCol"></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block" id="matchNextBtn" onclick="nextMatchRound()" disabled>الحرف التالي ▶</button>
+  </div>
+
+  <!-- Screen 5: Missing letter intro -->
+  <div class="screen" data-screen="5">
+    <div class="intro-icon">🔤</div>
+    <h2 class="big-title" style="text-align:center;">الحرف الناقص</h2>
+    <div class="instr-list">
+      <ul>
+        <li>👀 شوفوا الكلمة الناقصة حرف</li>
+        <li>👆 اختاروا الحرف الصح يكمّل الكلمة</li>
+      </ul>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block sun" onclick="goTo(6)">ابدأ التحدي 🧠</button>
+  </div>
+
+  <!-- Screen 6: Missing letter -->
+  <div class="screen" data-screen="6">
+    <div class="flash-progress" id="missingProgress"></div>
+    <div class="missing-stage">
+      <div class="missing-card">
+        <div class="missing-emoji" id="missingEmoji"></div>
+        <div class="missing-word" id="missingWord"></div>
+      </div>
+      <div class="letter-options" id="missingOptions"></div>
+      <button class="btn block" id="missingNextBtn" style="display:none;" onclick="nextMissing()">التالي ▶</button>
+    </div>
+  </div>
+
+  <!-- Screen 7: Food & Home intro -->
+  <div class="screen" data-screen="7">
+    <div class="intro-icon">🍉🛋️</div>
+    <h2 class="big-title" style="text-align:center;">كلمات الأكل والمنزل</h2>
+    <div class="instr-list">
+      <ul>
+        <li>🍽️ بطاقات لمراجعة كلمات الأكل</li>
+        <li>🏠 وكلمات المطبخ وغرفة النوم</li>
+      </ul>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block sun" onclick="goTo(8)">ابدأ البطاقات 🎴</button>
+  </div>
+
+  <!-- Screen 8: Food & Home Flashcards -->
+  <div class="screen" data-screen="8">
+    <div class="flash-progress" id="fhProgress"></div>
+    <div class="flash-stage">
+      <div class="flashcard" id="fhCard" onclick="flipFH()">
+        <div class="flashcard-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-letter-tag" id="fhTag"></div>
+            <div class="fc-emoji" id="fhEmoji"></div>
+            <div class="fc-hint">اضغط لتسمع الكلمة 👆</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-word" id="fhWord"></div>
+            <button class="fc-speak" onclick="event.stopPropagation();speakFH()">🔊</button>
+          </div>
+        </div>
+      </div>
+      <div class="flash-nav">
+        <button class="btn coral" id="fhPrev" onclick="fhStep(-1)">◀ السابق</button>
+        <button class="btn" id="fhNext" onclick="fhStep(1)">التالي ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 9: Food & Home Matching -->
+  <div class="screen" data-screen="9">
+    <div class="score-pill">⭐ <span id="fhMatchScore">0</span> نقطة</div>
+    <div class="match-round-label" id="fhMatchRoundLabel"></div>
+    <div class="match-grid">
+      <div class="match-col" id="fhMatchEmojiCol"></div>
+      <div class="match-col" id="fhMatchWordCol"></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block" id="fhMatchNextBtn" onclick="nextFHMatchRound()" disabled>المجموعة التالية ▶</button>
+  </div>
+
+  <!-- Screen 10: Final quiz intro -->
+  <div class="screen" data-screen="10">
+    <div class="intro-icon">🏆</div>
+    <h2 class="big-title" style="text-align:center;">التحدي النهائي</h2>
+    <div class="instr-list">
+      <ul>
+        <li>🎯 10 أسئلة من كل شي تعلمناه</li>
+        <li>👆 اختاروا الكلمة الصحيحة للصورة</li>
+      </ul>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn block coral" onclick="startQuiz()">ابدأ التحدي 🔥</button>
+  </div>
+
+  <!-- Screen 11: Quiz -->
+  <div class="screen" data-screen="11">
+    <div class="quiz-q-count" id="quizCount"></div>
+    <div class="quiz-emoji" id="quizEmoji"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+  </div>
+
+  <!-- Screen 12: Celebration -->
+  <div class="screen" data-screen="12">
+    <div class="result-wrap">
+      <div class="stars-row">🌟🏆🌟</div>
+      <h2 class="big-title">أحسنتم يا أبطال!</h2>
+      <div class="result-score"><span id="finalScore">0</span>/10</div>
+      <p class="sub-text">راجعتوا حروف A إلى K وكلمات الأكل والمنزل بنجاح</p>
+      <div class="badge-row">
+        <div class="badge"><span class="ic">🔤</span>خبير الحروف</div>
+        <div class="badge"><span class="ic">🍉</span>خبير الأكل</div>
+        <div class="badge"><span class="ic">🏠</span>خبير المنزل</div>
+        <div class="badge"><span class="ic">🎯</span>بطل المطابقة</div>
+      </div>
+      <button class="btn block sun" onclick="restartAll()">🔁 ابدأ من جديد</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="navbar">
+  <button class="nav-btn" id="prevBtn" onclick="prevScreen()">◀ رجوع</button>
+  <span class="nav-mid" id="navMid"></span>
+  <button class="nav-btn" id="nextBtn" onclick="manualNext()">التالي ▶</button>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const letterData = [
+  {letter:'A', words:[{w:'ant',e:'🐜'},{w:'alligator',e:'🐊'},{w:'apple',e:'🍎'},{w:'ax',e:'🪓'}]},
+  {letter:'B', words:[{w:'bed',e:'🛏️'},{w:'bear',e:'🐻'},{w:'banana',e:'🍌'},{w:'bird',e:'🐦'}]},
+  {letter:'C', words:[{w:'cat',e:'🐱'},{w:'cup',e:'☕'},{w:'computer',e:'💻'},{w:'car',e:'🚗'}]},
+  {letter:'D', words:[{w:'desk',e:'🪑'},{w:'doll',e:'🪆'},{w:'dog',e:'🐶'},{w:'duck',e:'🦆'}]},
+  {letter:'E', words:[{w:'egg',e:'🥚'},{w:'envelope',e:'✉️'},{w:'elephant',e:'🐘'},{w:'elbow',e:'💪'}]},
+  {letter:'F', words:[{w:'farm',e:'🚜'},{w:'fan',e:'🌀'},{w:'fork',e:'🍴'},{w:'fish',e:'🐟'}]},
+  {letter:'G', words:[{w:'gorilla',e:'🦍'},{w:'girl',e:'👧'},{w:'gift',e:'🎁'},{w:'goat',e:'🐐'}]},
+  {letter:'H', words:[{w:'hut',e:'🛖'},{w:'hat',e:'🎩'},{w:'hot dog',e:'🌭'},{w:'horse',e:'🐴'}]},
+  {letter:'I', words:[{w:'igloo',e:'🧊'},{w:'insect',e:'🐛'},{w:'iguana',e:'🦎'},{w:'ink',e:'🖋️'}]},
+  {letter:'J', words:[{w:'juice',e:'🧃'},{w:'jacket',e:'🧥'},{w:'jam',e:'🍯'},{w:'jet',e:'✈️'}]},
+  {letter:'K', words:[{w:'key',e:'🔑'},{w:'kite',e:'🪁'},{w:'king',e:'🤴'},{w:'kangaroo',e:'🦘'}]},
+];
+const allWords = [];
+letterData.forEach(g => g.words.forEach(item => allWords.push({...item, letter:g.letter})));
+
+const foodWords = [
+  {w:'watermelon',e:'🍉'},{w:'chocolate',e:'🍫'},{w:'cake',e:'🍰'},{w:'chicken',e:'🍗'},
+  {w:'lemonade',e:'🥤'},{w:'burger',e:'🍔'},{w:'chips',e:'🍟'},{w:'ice cream',e:'🍦'},
+  {w:'carrot',e:'🥕'},{w:'grapes',e:'🍇'},{w:'orange',e:'🍊'},{w:'mango',e:'🥭'},
+  {w:'pineapple',e:'🍍'},{w:'rice',e:'🍚'},{w:'bread',e:'🍞'},{w:'milk',e:'🥛'}
+];
+const homeWords = [
+  {w:'box',e:'📦'},{w:'clock',e:'🕐'},{w:'cupboard',e:'🗄️'},{w:'radio',e:'📻'},
+  {w:'bed',e:'🛏️'},{w:'doll',e:'🪆'},{w:'bookcase',e:'📚'}
+];
+const fhWords = [...foodWords.map(x=>({...x,tag:'🍽️'})), ...homeWords.map(x=>({...x,tag:'🏠'}))];
+
+/* ================= NAV ================= */
+const trailMeta = [
+  {icon:'🚪',label:'البداية'},
+  {icon:'🃏',label:'بطاقات'},
+  {icon:'🃏',label:'بطاقات'},
+  {icon:'🧩',label:'مطابقة'},
+  {icon:'🧩',label:'مطابقة'},
+  {icon:'🔤',label:'ناقص'},
+  {icon:'🔤',label:'ناقص'},
+  {icon:'🍉',label:'أكل/منزل'},
+  {icon:'🍉',label:'أكل/منزل'},
+  {icon:'🧩',label:'مطابقة'},
+  {icon:'🏆',label:'تحدي'},
+  {icon:'🏆',label:'تحدي'},
+  {icon:'🎉',label:'النهاية'},
+];
+const totalScreens = 13;
+let current = 0;
+
+const trailEl = document.getElementById('trail');
+trailMeta.forEach((s,i)=>{
+  const btn = document.createElement('button');
+  btn.className='trail-stop';
+  btn.id='stop-'+i;
+  btn.innerHTML = `<div class="paw">${s.icon}</div><span class="lbl">${s.label}</span>`;
+  btn.onclick=()=>goTo(i);
+  trailEl.appendChild(btn);
+});
+
+function renderTrail(){
+  for(let i=0;i<totalScreens;i++){
+    const el = document.getElementById('stop-'+i);
+    el.classList.toggle('active', i===current);
+    el.classList.toggle('done', i<current);
+  }
+}
+
+function goTo(idx){
+  document.querySelector('.screen.show').classList.remove('show');
+  current = Math.max(0, Math.min(totalScreens-1, idx));
+  document.querySelector(`[data-screen="${current}"]`).classList.add('show');
+  renderTrail();
+  updateNavbar();
+  onEnterScreen(current);
+}
+function nextScreen(){ goTo(current+1); }
+function prevScreen(){ goTo(current-1); }
+function manualNext(){
+  // For intro / simple screens, allow navbar "next" to move forward.
+  const skipManual = [2,4,6,8,9,11]; // interactive screens use their own internal nav
+  if(skipManual.includes(current)) return;
+  nextScreen();
+}
+function updateNavbar(){
+  document.getElementById('prevBtn').disabled = current===0;
+  document.getElementById('navMid').textContent = (current+1)+' / '+totalScreens;
+  const interactiveOnly = [2,4,6,8,9,11,12];
+  document.getElementById('nextBtn').style.visibility = interactiveOnly.includes(current) ? 'hidden' : 'visible';
+}
+
+function onEnterScreen(i){
+  if(i===0) renderCoverLetters();
+  if(i===2) { flashIndex=0; renderFlashcard(); }
+  if(i===4) { matchLetterIndex=0; renderMatchRound(); }
+  if(i===6) { missingIndex=0; renderMissing(); }
+  if(i===8) { fhIndex=0; renderFH(); }
+  if(i===9) { fhMatchRoundIndex=0; renderFHMatchRound(); }
+}
+
+/* ================= COVER ================= */
+function renderCoverLetters(){
+  const wrap = document.getElementById('coverLetters');
+  if(wrap.childElementCount) return;
+  letterData.forEach(g=>{
+    const c=document.createElement('div');
+    c.className='letter-chip';
+    c.textContent=g.letter;
+    wrap.appendChild(c);
+  });
+}
+
+/* ================= SPEECH ================= */
+function speak(text){
+  try{
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ================= FLASHCARDS (letters) ================= */
+let flashIndex = 0;
+function renderFlashcard(){
+  const item = allWords[flashIndex];
+  document.getElementById('fcLetterTag').textContent = item.letter;
+  document.getElementById('fcEmoji').textContent = item.e;
+  document.getElementById('fcWord').textContent = item.w;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('flashProgress').textContent = `بطاقة ${flashIndex+1} من ${allWords.length}`;
+  document.getElementById('flashPrev').disabled = flashIndex===0;
+  document.getElementById('flashNext').textContent = flashIndex===allWords.length-1 ? 'التالي 🎯' : 'التالي ▶';
+}
+function flipCard(){
+  const card = document.getElementById('flashcard');
+  card.classList.toggle('flipped');
+  if(card.classList.contains('flipped')) speak(allWords[flashIndex].w);
+}
+function speakWord(){ speak(allWords[flashIndex].w); }
+function flashStep(dir){
+  if(dir===1 && flashIndex===allWords.length-1){ goTo(3); return; }
+  flashIndex = Math.max(0, Math.min(allWords.length-1, flashIndex+dir));
+  renderFlashcard();
+}
+
+/* ================= MATCHING (letters, one letter group at a time) ================= */
+let matchLetterIndex = 0;
+let matchScoreTotal = 0;
+let matchSelectedEmoji = null;
+let matchLockedCount = 0;
+
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function renderMatchRound(){
+  const group = letterData[matchLetterIndex];
+  document.getElementById('matchRoundLabel').textContent = `حرف ${group.letter} — طابق الصورة مع الكلمة`;
+  document.getElementById('matchScore').textContent = matchScoreTotal;
+  const emojiCol = document.getElementById('matchEmojiCol');
+  const wordCol = document.getElementById('matchWordCol');
+  emojiCol.innerHTML=''; wordCol.innerHTML='';
+  matchSelectedEmoji = null;
+  matchLockedCount = 0;
+  document.getElementById('matchNextBtn').disabled = true;
+  document.getElementById('matchNextBtn').textContent = matchLetterIndex===letterData.length-1 ? 'التالي ▶' : 'الحرف التالي ▶';
+
+  const emojiOrder = shuffle(group.words);
+  const wordOrder = shuffle(group.words);
+
+  emojiOrder.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='match-item emoji';
+    d.textContent=item.e;
+    d.dataset.word=item.w;
+    d.onclick=()=>selectEmoji(d,item.w);
+    emojiCol.appendChild(d);
+  });
+  wordOrder.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='match-item word';
+    d.textContent=item.w;
+    d.dataset.word=item.w;
+    d.onclick=()=>selectWord(d,item.w);
+    wordCol.appendChild(d);
+  });
+}
+function selectEmoji(el,word){
+  if(el.classList.contains('correct')) return;
+  document.querySelectorAll('#matchEmojiCol .match-item').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  matchSelectedEmoji = {el, word};
+}
+function selectWord(el,word){
+  if(!matchSelectedEmoji || el.classList.contains('correct')) return;
+  if(matchSelectedEmoji.word === word){
+    matchSelectedEmoji.el.classList.remove('selected');
+    matchSelectedEmoji.el.classList.add('correct');
+    el.classList.add('correct');
+    matchScoreTotal += 10;
+    matchLockedCount++;
+    document.getElementById('matchScore').textContent = matchScoreTotal;
+    speak(word);
+    matchSelectedEmoji = null;
+    if(matchLockedCount === 4){ document.getElementById('matchNextBtn').disabled = false; }
+  }else{
+    el.classList.add('wrong');
+    setTimeout(()=>el.classList.remove('wrong'), 400);
+  }
+}
+function nextMatchRound(){
+  if(matchLetterIndex === letterData.length-1){ goTo(5); return; }
+  matchLetterIndex++;
+  renderMatchRound();
+}
+
+/* ================= MISSING LETTER ================= */
+let missingIndex = 0;
+const missingSet = letterData.map(g => ({...g.words[0], letter:g.letter}));
+function blankInfo(word){
+  const pos = Math.min(1, word.replace(' ','').length-1); // blank 2nd character generally
+  const chars = word.split('');
+  let realPos = 0, count=0;
+  for(let i=0;i<chars.length;i++){
+    if(chars[i] !== ' '){
+      if(count===1){ realPos=i; break; }
+      count++;
+    }
+  }
+  return realPos;
+}
+function renderMissing(){
+  const item = missingSet[missingIndex];
+  document.getElementById('missingProgress').textContent = `سؤال ${missingIndex+1} من ${missingSet.length}`;
+  document.getElementById('missingEmoji').textContent = item.e;
+  const pos = blankInfo(item.w);
+  const chars = item.w.split('');
+  const correctLetter = chars[pos];
+  let html = '';
+  chars.forEach((c,i)=>{
+    if(c===' '){ html += ' &nbsp; '; }
+    else if(i===pos){ html += `<span class="blank" id="blankSpan">${c}</span>`; }
+    else { html += c; }
+  });
+  document.getElementById('missingWord').innerHTML = html;
+
+  // build options: correct + 2 distractors
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  let opts = [correctLetter];
+  while(opts.length<3){
+    const rand = alphabet[Math.floor(Math.random()*alphabet.length)];
+    if(!opts.includes(rand)) opts.push(rand);
+  }
+  opts = shuffle(opts);
+  const optWrap = document.getElementById('missingOptions');
+  optWrap.innerHTML='';
+  document.getElementById('missingNextBtn').style.display='none';
+  opts.forEach(letter=>{
+    const b=document.createElement('button');
+    b.className='letter-opt';
+    b.textContent=letter;
+    b.onclick=()=>checkMissing(b, letter===correctLetter, correctLetter, item.w);
+    optWrap.appendChild(b);
+  });
+}
+function checkMissing(btn, isCorrect, correctLetter, word){
+  if(isCorrect){
+    btn.classList.add('correct');
+    document.getElementById('blankSpan').classList.add('filled');
+    document.getElementById('blankSpan').textContent = correctLetter;
+    document.getElementById('blankSpan').style.color = '';
+    speak(word);
+    document.querySelectorAll('.letter-opt').forEach(b=>b.disabled=true);
+    document.getElementById('missingNextBtn').style.display='flex';
+    document.getElementById('missingNextBtn').textContent = missingIndex===missingSet.length-1 ? 'التالي ▶' : 'السؤال التالي ▶';
+  }else{
+    btn.classList.add('wrong');
+    setTimeout(()=>btn.classList.remove('wrong'),400);
+  }
+}
+function nextMissing(){
+  if(missingIndex === missingSet.length-1){ goTo(7); return; }
+  missingIndex++;
+  renderMissing();
+}
+
+/* ================= FOOD & HOME FLASHCARDS ================= */
+let fhIndex = 0;
+function renderFH(){
+  const item = fhWords[fhIndex];
+  document.getElementById('fhTag').textContent = item.tag;
+  document.getElementById('fhEmoji').textContent = item.e;
+  document.getElementById('fhWord').textContent = item.w;
+  document.getElementById('fhCard').classList.remove('flipped');
+  document.getElementById('fhProgress').textContent = `بطاقة ${fhIndex+1} من ${fhWords.length}`;
+  document.getElementById('fhPrev').disabled = fhIndex===0;
+  document.getElementById('fhNext').textContent = fhIndex===fhWords.length-1 ? 'التالي 🎯' : 'التالي ▶';
+}
+function flipFH(){
+  const card = document.getElementById('fhCard');
+  card.classList.toggle('flipped');
+  if(card.classList.contains('flipped')) speak(fhWords[fhIndex].w);
+}
+function speakFH(){ speak(fhWords[fhIndex].w); }
+function fhStep(dir){
+  if(dir===1 && fhIndex===fhWords.length-1){ goTo(9); return; }
+  fhIndex = Math.max(0, Math.min(fhWords.length-1, fhIndex+dir));
+  renderFH();
+}
+
+/* ================= FOOD & HOME MATCHING ================= */
+let fhMatchRoundIndex = 0;
+let fhMatchScoreTotal = 0;
+let fhMatchSelected = null;
+let fhMatchLocked = 0;
+const fhRounds = [];
+for(let i=0;i<fhWords.length;i+=4){ fhRounds.push(fhWords.slice(i,i+4)); }
+
+function renderFHMatchRound(){
+  const group = fhRounds[fhMatchRoundIndex];
+  document.getElementById('fhMatchRoundLabel').textContent = `مجموعة ${fhMatchRoundIndex+1} من ${fhRounds.length}`;
+  document.getElementById('fhMatchScore').textContent = fhMatchScoreTotal;
+  const emojiCol = document.getElementById('fhMatchEmojiCol');
+  const wordCol = document.getElementById('fhMatchWordCol');
+  emojiCol.innerHTML=''; wordCol.innerHTML='';
+  fhMatchSelected = null;
+  fhMatchLocked = 0;
+  document.getElementById('fhMatchNextBtn').disabled = true;
+  document.getElementById('fhMatchNextBtn').textContent = fhMatchRoundIndex===fhRounds.length-1 ? 'التالي ▶' : 'المجموعة التالية ▶';
+
+  const emojiOrder = shuffle(group);
+  const wordOrder = shuffle(group);
+  emojiOrder.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='match-item emoji';
+    d.textContent=item.e;
+    d.onclick=()=>fhSelectEmoji(d,item.w);
+    emojiCol.appendChild(d);
+  });
+  wordOrder.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='match-item word';
+    d.textContent=item.w;
+    d.onclick=()=>fhSelectWord(d,item.w);
+    wordCol.appendChild(d);
+  });
+}
+function fhSelectEmoji(el,word){
+  if(el.classList.contains('correct')) return;
+  document.querySelectorAll('#fhMatchEmojiCol .match-item').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  fhMatchSelected = {el, word};
+}
+function fhSelectWord(el,word){
+  if(!fhMatchSelected || el.classList.contains('correct')) return;
+  if(fhMatchSelected.word === word){
+    fhMatchSelected.el.classList.remove('selected');
+    fhMatchSelected.el.classList.add('correct');
+    el.classList.add('correct');
+    fhMatchScoreTotal += 10;
+    fhMatchLocked++;
+    document.getElementById('fhMatchScore').textContent = fhMatchScoreTotal;
+    speak(word);
+    fhMatchSelected = null;
+    if(fhMatchLocked === fhRounds[fhMatchRoundIndex].length){ document.getElementById('fhMatchNextBtn').disabled=false; }
+  }else{
+    el.classList.add('wrong');
+    setTimeout(()=>el.classList.remove('wrong'), 400);
+  }
+}
+function nextFHMatchRound(){
+  if(fhMatchRoundIndex === fhRounds.length-1){ goTo(10); return; }
+  fhMatchRoundIndex++;
+  renderFHMatchRound();
+}
+
+/* ================= FINAL QUIZ ================= */
+let quizQuestions = [];
+let quizIndex = 0;
+let quizScore = 0;
+function buildQuiz(){
+  const pool = [...allWords.map(x=>({w:x.w,e:x.e})), ...foodWords, ...homeWords];
+  const chosen = shuffle(pool).slice(0,10);
+  quizQuestions = chosen.map(correct=>{
+    let distractors = shuffle(pool.filter(p=>p.w!==correct.w)).slice(0,2);
+    let options = shuffle([correct, ...distractors]);
+    return {correct: correct.w, emoji: correct.e, options: options.map(o=>o.w)};
+  });
+}
+function startQuiz(){
+  buildQuiz();
+  quizIndex=0; quizScore=0;
+  goTo(11);
+  renderQuiz();
+}
+function renderQuiz(){
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quizCount').textContent = `سؤال ${quizIndex+1} من ${quizQuestions.length}`;
+  document.getElementById('quizEmoji').textContent = q.emoji;
+  const wrap = document.getElementById('quizOptions');
+  wrap.innerHTML='';
+  q.options.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='quiz-opt';
+    b.textContent=opt;
+    b.onclick=()=>checkQuiz(b,opt,q.correct);
+    wrap.appendChild(b);
+  });
+}
+function checkQuiz(btn, opt, correct){
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.onclick=null);
+  if(opt===correct){
+    btn.classList.add('correct');
+    quizScore++;
+    speak(correct);
+  }else{
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-opt').forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); });
+  }
+  setTimeout(()=>{
+    if(quizIndex === quizQuestions.length-1){
+      document.getElementById('finalScore').textContent = quizScore;
+      goTo(12);
+    }else{
+      quizIndex++;
+      renderQuiz();
+    }
+  }, 1100);
+}
+
+/* ================= RESTART ================= */
+function restartAll(){
+  matchScoreTotal=0; fhMatchScoreTotal=0; quizScore=0;
+  goTo(0);
+}
+
+/* init */
+updateNavbar();
+renderTrail();
+renderCoverLetters();
+</script>
+</body>
+</html>
